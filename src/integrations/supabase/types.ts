@@ -14,13 +14,262 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      inaccuracy_flags: {
+        Row: {
+          created_at: string
+          id: string
+          place_id: string | null
+          reason: string
+          status: string
+          trip_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          place_id?: string | null
+          reason: string
+          status?: string
+          trip_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          place_id?: string | null
+          reason?: string
+          status?: string
+          trip_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inaccuracy_flags_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inaccuracy_flags_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      places: {
+        Row: {
+          best_time: string | null
+          blurb_en: string
+          blurb_vn: string | null
+          city: string | null
+          community_flag: boolean
+          created_at: string
+          cultural_context: string | null
+          embedding: string | null
+          est_cost_usd: number | null
+          id: string
+          lat: number | null
+          lng: number | null
+          name_en: string
+          name_vn: string | null
+          province: string
+          slug: string
+          source: Json | null
+          tips: string | null
+          type: string
+        }
+        Insert: {
+          best_time?: string | null
+          blurb_en: string
+          blurb_vn?: string | null
+          city?: string | null
+          community_flag?: boolean
+          created_at?: string
+          cultural_context?: string | null
+          embedding?: string | null
+          est_cost_usd?: number | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name_en: string
+          name_vn?: string | null
+          province: string
+          slug: string
+          source?: Json | null
+          tips?: string | null
+          type: string
+        }
+        Update: {
+          best_time?: string | null
+          blurb_en?: string
+          blurb_vn?: string | null
+          city?: string | null
+          community_flag?: boolean
+          created_at?: string
+          cultural_context?: string | null
+          embedding?: string | null
+          est_cost_usd?: number | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name_en?: string
+          name_vn?: string | null
+          province?: string
+          slug?: string
+          source?: Json | null
+          tips?: string | null
+          type?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          locale: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          locale?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          locale?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      trip_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          role: string
+          trip_id: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role: string
+          trip_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role?: string
+          trip_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_messages_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trips: {
+        Row: {
+          budget_usd: number | null
+          created_at: string
+          destination: string | null
+          end_date: string | null
+          id: string
+          itinerary: Json
+          locale: string
+          party: string | null
+          start_date: string | null
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget_usd?: number | null
+          created_at?: string
+          destination?: string | null
+          end_date?: string | null
+          id?: string
+          itinerary?: Json
+          locale?: string
+          party?: string | null
+          start_date?: string | null
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget_usd?: number | null
+          created_at?: string
+          destination?: string | null
+          end_date?: string | null
+          id?: string
+          itinerary?: Json
+          locale?: string
+          party?: string | null
+          start_date?: string | null
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      match_places: {
+        Args: {
+          match_count?: number
+          province_filter?: string
+          query_embedding: string
+        }
+        Returns: {
+          best_time: string
+          blurb_en: string
+          blurb_vn: string
+          city: string
+          community_flag: boolean
+          cultural_context: string
+          est_cost_usd: number
+          id: string
+          lat: number
+          lng: number
+          name_en: string
+          name_vn: string
+          province: string
+          similarity: number
+          slug: string
+          source: Json
+          tips: string
+          type: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
