@@ -45,7 +45,7 @@ export function ItineraryPanel({ itinerary, onSave, saving, saved, onFlag }: Pro
           </Button>
         )}
       </div>
-      <div className="flex-1 overflow-y-auto px-6 py-5">
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
         {itinerary.summary && (
           <p className="mb-6 border-l-2 border-lacquer pl-3 font-display text-base italic text-foreground/80">
             {itinerary.summary}
