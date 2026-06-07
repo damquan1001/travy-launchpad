@@ -73,11 +73,11 @@ function PlanPage() {
   return (
     <div className="flex h-screen flex-col bg-paper">
       <Nav />
-      <div className="grid flex-1 overflow-hidden lg:grid-cols-2">
-        <section className="flex flex-col border-r border-border">
+      <div className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-2">
+        <section className="flex min-h-0 flex-col overflow-hidden border-r border-border">
           <ChatPanel onItinerary={(it) => { setItinerary(it); setSaved(false); }} />
         </section>
-        <section className="hidden lg:flex lg:flex-col">
+        <section className="hidden min-h-0 overflow-hidden lg:flex lg:flex-col">
           <ItineraryPanel
             itinerary={itinerary}
             onSave={handleSave}

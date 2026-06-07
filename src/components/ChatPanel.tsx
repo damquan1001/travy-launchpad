@@ -80,7 +80,7 @@ export function ChatPanel({ initialMessages = [], onItinerary }: Props) {
 
   return (
     <div className="flex h-full flex-col">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-6">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
         {messages.length === 0 && (
           <div className="mx-auto max-w-md animate-reveal">
             <p className="font-mono text-xs uppercase tracking-widest text-lacquer">{tr.onboarding}</p>
