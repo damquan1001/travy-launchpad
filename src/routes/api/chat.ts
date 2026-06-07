@@ -44,7 +44,7 @@ export const Route = createFileRoute("/api/chat")({
         const { data: ragRows } = await supabase.rpc("search_places", {
           query_text: lastText,
           match_count: 10,
-          province_filter: province,
+          province_filter: province ?? undefined,
         });
 
         const ragContext = (ragRows ?? []).map((p) =>
@@ -76,7 +76,7 @@ ${ragContext || "(no matches — ask the user for the destination)"}
         const result = streamText({
           model,
           system,
-          messages: convertToModelMessages(messages),
+          messages: await convertToModelMessages(messages),
           stopWhen: stepCountIs(5),
           tools: {
             build_itinerary: tool({
