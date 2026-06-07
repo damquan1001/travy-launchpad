@@ -76,6 +76,7 @@ export type Database = {
           name_en: string
           name_vn: string | null
           province: string
+          search_tsv: unknown
           slug: string
           source: Json | null
           tips: string | null
@@ -97,6 +98,7 @@ export type Database = {
           name_en: string
           name_vn?: string | null
           province: string
+          search_tsv?: unknown
           slug: string
           source?: Json | null
           tips?: string | null
@@ -118,6 +120,7 @@ export type Database = {
           name_en?: string
           name_vn?: string | null
           province?: string
+          search_tsv?: unknown
           slug?: string
           source?: Json | null
           tips?: string | null
@@ -264,6 +267,33 @@ export type Database = {
           name_vn: string
           province: string
           similarity: number
+          slug: string
+          source: Json
+          tips: string
+          type: string
+        }[]
+      }
+      search_places: {
+        Args: {
+          match_count?: number
+          province_filter?: string
+          query_text: string
+        }
+        Returns: {
+          best_time: string
+          blurb_en: string
+          blurb_vn: string
+          city: string
+          community_flag: boolean
+          cultural_context: string
+          est_cost_usd: number
+          id: string
+          lat: number
+          lng: number
+          name_en: string
+          name_vn: string
+          province: string
+          rank: number
           slug: string
           source: Json
           tips: string
