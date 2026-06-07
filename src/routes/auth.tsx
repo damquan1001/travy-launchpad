@@ -33,8 +33,10 @@ function AuthPage() {
   const handle = async (mode: "in" | "up") => {
     setBusy(true);
     try {
-      const fn = mode === "in" ? supabase.auth.signInWithPassword : supabase.auth.signUp;
-      const { error } = await fn({ email, password });
+      const { error } =
+        mode === "in"
+          ? await supabase.auth.signInWithPassword({ email, password })
+          : await supabase.auth.signUp({ email, password });
       if (error) throw error;
       toast.success(mode === "in" ? "Welcome back" : "Account created");
       router.navigate({ to: "/plan" });
