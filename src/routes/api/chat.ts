@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import { createLovableAiGatewayProvider, getLovableKey } from "@/lib/ai-gateway.server";
 import type { Database } from "@/integrations/supabase/types";
+import { retrievePlacesCore } from "@/lib/places.functions";
 
 const VN_PROVINCES = [
   "Hanoi","Ho Chi Minh City","Da Nang","Hoi An","Quang Nam","Quang Ninh",
@@ -63,8 +64,9 @@ STYLE: Warm, knowledgeable, concise. Use markdown sparingly. Surface cultural co
 
 WORKFLOW:
 1. Ask 1-2 short clarifying questions if you don't know destination, dates/length, party, vibe.
-2. Once you have enough, CALL the build_itinerary tool with a structured itinerary. Do this whenever you create or meaningfully revise the plan.
-3. After the tool call, write a short paragraph (2-4 sentences) summarizing the plan and inviting refinement.
+2. Before proposing or revising a plan, CALL the search_places tool to retrieve grounded candidates (one or more focused queries — e.g. by city, vibe, or food type). Use its results as the primary source.
+3. Once you have enough, CALL the build_itinerary tool with a structured itinerary. Every place you include MUST come from search_places results or the initial knowledge base below — never invent.
+4. After the tool call, write a short paragraph (2-4 sentences) summarizing the plan and inviting refinement.
 
 KNOWLEDGE BASE (use these as primary; cite cultural detail; do not fabricate beyond these unless user requested):
 ${ragContext || "(no matches — ask the user for the destination)"}
@@ -77,8 +79,39 @@ ${ragContext || "(no matches — ask the user for the destination)"}
           model,
           system,
           messages: await convertToModelMessages(messages),
-          stopWhen: stepCountIs(5),
+          stopWhen: stepCountIs(8),
           tools: {
+            search_places: tool({
+              description: "Search the curated Vietnam knowledge base (hybrid vector + lexical) for places matching a query. Call this BEFORE build_itinerary to gather grounded candidates. Run multiple focused queries when needed (e.g. by city, vibe, or food type).",
+              inputSchema: z.object({
+                query: z.string().min(1).max(500).describe("Natural-language description of what to find, e.g. 'street food in Hanoi old quarter' or 'quiet boutique stays in Hoi An'"),
+                province: z.string().max(100).nullable().optional().describe("Optional Vietnam province filter, e.g. 'Hanoi', 'Quang Nam'"),
+                k: z.number().int().min(1).max(15).default(8),
+              }),
+              execute: async (input) => {
+                const places = await retrievePlacesCore({
+                  query: input.query,
+                  province: input.province ?? null,
+                  k: input.k ?? 8,
+                });
+                return {
+                  places: places.map((p) => ({
+                    id: p.id,
+                    name_en: p.name_en,
+                    name_vn: p.name_vn,
+                    province: p.province,
+                    city: p.city,
+                    type: p.type,
+                    blurb: p.blurb_en,
+                    cultural_context: p.cultural_context,
+                    tips: p.tips,
+                    best_time: p.best_time,
+                    est_cost_usd: p.est_cost_usd,
+                    community_flag: p.community_flag,
+                  })),
+                };
+              },
+            }),
             build_itinerary: tool({
               description: "Emit or update the structured itinerary the UI renders on the right panel. Call this whenever you create or meaningfully revise the plan.",
               inputSchema: z.object({
