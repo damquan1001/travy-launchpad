@@ -79,8 +79,39 @@ ${ragContext || "(no matches — ask the user for the destination)"}
           model,
           system,
           messages: await convertToModelMessages(messages),
-          stopWhen: stepCountIs(5),
+          stopWhen: stepCountIs(8),
           tools: {
+            search_places: tool({
+              description: "Search the curated Vietnam knowledge base (hybrid vector + lexical) for places matching a query. Call this BEFORE build_itinerary to gather grounded candidates. Run multiple focused queries when needed (e.g. by city, vibe, or food type).",
+              inputSchema: z.object({
+                query: z.string().min(1).max(500).describe("Natural-language description of what to find, e.g. 'street food in Hanoi old quarter' or 'quiet boutique stays in Hoi An'"),
+                province: z.string().max(100).nullable().optional().describe("Optional Vietnam province filter, e.g. 'Hanoi', 'Quang Nam'"),
+                k: z.number().int().min(1).max(15).default(8),
+              }),
+              execute: async (input) => {
+                const places = await retrievePlacesCore({
+                  query: input.query,
+                  province: input.province ?? null,
+                  k: input.k ?? 8,
+                });
+                return {
+                  places: places.map((p) => ({
+                    id: p.id,
+                    name_en: p.name_en,
+                    name_vn: p.name_vn,
+                    province: p.province,
+                    city: p.city,
+                    type: p.type,
+                    blurb: p.blurb_en,
+                    cultural_context: p.cultural_context,
+                    tips: p.tips,
+                    best_time: p.best_time,
+                    est_cost_usd: p.est_cost_usd,
+                    community_flag: p.community_flag,
+                  })),
+                };
+              },
+            }),
             build_itinerary: tool({
               description: "Emit or update the structured itinerary the UI renders on the right panel. Call this whenever you create or meaningfully revise the plan.",
               inputSchema: z.object({
