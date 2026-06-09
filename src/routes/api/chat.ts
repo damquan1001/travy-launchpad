@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import { createLovableAiGatewayProvider, getLovableKey } from "@/lib/ai-gateway.server";
 import type { Database } from "@/integrations/supabase/types";
+import { retrievePlacesCore } from "@/lib/places.functions";
 
 const VN_PROVINCES = [
   "Hanoi","Ho Chi Minh City","Da Nang","Hoi An","Quang Nam","Quang Ninh",
