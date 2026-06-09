@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
@@ -25,39 +25,75 @@ function PlanPage() {
   const { user } = useAuth();
   const [locale] = useLocale();
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
+  const [tripId, setTripId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const save = useServerFn(saveTrip);
   const flag = useServerFn(flagInaccuracy);
 
-  const handleSave = async () => {
-    if (!user) { router.navigate({ to: "/auth" }); return; }
-    if (!itinerary) return;
+  const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const persist = useCallback(async (it: Itinerary, opts?: { redirect?: boolean }) => {
+    if (!user) return;
     setSaving(true);
     try {
       const res = await save({
         data: {
-          title: itinerary.title || itinerary.destination || "Vietnam trip",
-          destination: itinerary.destination,
-          summary: itinerary.summary,
-          party: itinerary.party,
-          start_date: itinerary.start_date ?? null,
-          end_date: itinerary.end_date ?? null,
-          budget_usd: itinerary.budget_usd ?? null,
+          id: tripId ?? undefined,
+          title: it.title || it.destination || "Vietnam trip",
+          destination: it.destination,
+          summary: it.summary,
+          party: it.party,
+          start_date: it.start_date ?? null,
+          end_date: it.end_date ?? null,
+          budget_usd: it.budget_usd ?? null,
           locale,
-          itinerary,
+          itinerary: it,
           status: "saved",
         },
       });
+      if (res?.trip?.id) {
+        if (!tripId) setTripId(res.trip.id);
+        if (opts?.redirect) router.navigate({ to: "/trips/$id", params: { id: res.trip.id } });
+      }
       setSaved(true);
-      toast.success("Trip saved");
-      if (res?.trip?.id) router.navigate({ to: "/trips/$id", params: { id: res.trip.id } });
     } catch (e: any) {
       toast.error(e?.message ?? "Could not save");
     } finally {
       setSaving(false);
     }
+  }, [user, tripId, locale, save, router]);
+
+  const handleChange = useCallback((next: Itinerary) => {
+    setItinerary(next);
+    setSaved(false);
+    if (!user) return;
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    autosaveTimer.current = setTimeout(() => { void persist(next); }, 1200);
+  }, [user, persist]);
+
+  useEffect(() => () => { if (autosaveTimer.current) clearTimeout(autosaveTimer.current); }, []);
+
+  // Anonymous draft survives refresh
+  useEffect(() => {
+    if (user || !itinerary) return;
+    try { sessionStorage.setItem("travy:draft", JSON.stringify(itinerary)); } catch {}
+  }, [itinerary, user]);
+  useEffect(() => {
+    if (itinerary) return;
+    try {
+      const raw = sessionStorage.getItem("travy:draft");
+      if (raw) setItinerary(JSON.parse(raw));
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSave = async () => {
+    if (!user) { router.navigate({ to: "/auth" }); return; }
+    if (!itinerary) return;
+    await persist(itinerary, { redirect: true });
+    toast.success("Trip saved");
   };
 
   const handleFlag = async (placeName: string) => {
@@ -80,6 +116,7 @@ function PlanPage() {
         <section className="hidden min-h-0 overflow-hidden lg:flex lg:flex-col">
           <ItineraryPanel
             itinerary={itinerary}
+            onChange={handleChange}
             onSave={handleSave}
             saving={saving}
             saved={saved}
