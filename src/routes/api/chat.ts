@@ -107,6 +107,8 @@ ${ragContext || "(no matches — ask the user for the destination)"}
                     tips: p.tips,
                     best_time: p.best_time,
                     est_cost_usd: p.est_cost_usd,
+                    lat: p.lat,
+                    lng: p.lng,
                     community_flag: p.community_flag,
                   })),
                 };
