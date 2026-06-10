@@ -136,6 +136,8 @@ ${ragContext || "(no matches — ask the user for the destination)"}
                     best_time: z.string().nullable().optional(),
                     tip: z.string().nullable().optional(),
                     transport: z.string().nullable().optional(),
+                    lat: z.number().nullable().optional(),
+                    lng: z.number().nullable().optional(),
                     community_flag: z.boolean().optional(),
                     source_kind: z.enum(["primary","community","web"]).optional(),
                   })),
