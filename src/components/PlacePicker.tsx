@@ -69,6 +69,8 @@ export function PlacePicker({ open, onOpenChange, province, defaultQuery = "", o
                     est_cost_usd: p.est_cost_usd ?? null,
                     best_time: p.best_time ?? null,
                     tip: p.tips ?? null,
+                    lat: p.lat ?? null,
+                    lng: p.lng ?? null,
                     community_flag: p.community_flag,
                     source_kind: p.community_flag ? "community" : "primary",
                   });
