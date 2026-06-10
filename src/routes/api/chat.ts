@@ -65,7 +65,7 @@ STYLE: Warm, knowledgeable, concise. Use markdown sparingly. Surface cultural co
 WORKFLOW:
 1. Ask 1-2 short clarifying questions if you don't know destination, dates/length, party, vibe.
 2. Before proposing or revising a plan, CALL the search_places tool to retrieve grounded candidates (one or more focused queries — e.g. by city, vibe, or food type). Use its results as the primary source.
-3. Once you have enough, CALL the build_itinerary tool with a structured itinerary. Every place you include MUST come from search_places results or the initial knowledge base below — never invent.
+3. Once you have enough, CALL the build_itinerary tool with a structured itinerary. Every place you include MUST come from search_places results or the initial knowledge base below — never invent. When the source provides lat/lng, pass them through so the place can be pinned on the map.
 4. After the tool call, write a short paragraph (2-4 sentences) summarizing the plan and inviting refinement.
 
 KNOWLEDGE BASE (use these as primary; cite cultural detail; do not fabricate beyond these unless user requested):
@@ -107,6 +107,8 @@ ${ragContext || "(no matches — ask the user for the destination)"}
                     tips: p.tips,
                     best_time: p.best_time,
                     est_cost_usd: p.est_cost_usd,
+                    lat: p.lat,
+                    lng: p.lng,
                     community_flag: p.community_flag,
                   })),
                 };
@@ -134,6 +136,8 @@ ${ragContext || "(no matches — ask the user for the destination)"}
                     best_time: z.string().nullable().optional(),
                     tip: z.string().nullable().optional(),
                     transport: z.string().nullable().optional(),
+                    lat: z.number().nullable().optional(),
+                    lng: z.number().nullable().optional(),
                     community_flag: z.boolean().optional(),
                     source_kind: z.enum(["primary","community","web"]).optional(),
                   })),

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { ChatPanel } from "@/components/ChatPanel";
 import { ItineraryPanel } from "@/components/ItineraryPanel";
+import { MapPanel } from "@/components/MapPanel";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocale } from "@/hooks/use-locale";
 import { saveTrip, flagInaccuracy } from "@/lib/trips.functions";
@@ -109,11 +110,11 @@ function PlanPage() {
   return (
     <div className="flex h-screen flex-col bg-paper">
       <Nav />
-      <div className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-2">
+      <div className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-[1fr_1fr_1fr]">
         <section className="flex min-h-0 flex-col overflow-hidden border-r border-border">
           <ChatPanel onItinerary={(it) => { setItinerary(it); setSaved(false); }} />
         </section>
-        <section className="hidden min-h-0 overflow-hidden lg:flex lg:flex-col">
+        <section className="hidden min-h-0 overflow-hidden border-r border-border lg:flex lg:flex-col">
           <ItineraryPanel
             itinerary={itinerary}
             onChange={handleChange}
@@ -122,6 +123,9 @@ function PlanPage() {
             saved={saved}
             onFlag={handleFlag}
           />
+        </section>
+        <section className="hidden min-h-0 overflow-hidden lg:block">
+          <MapPanel itinerary={itinerary} />
         </section>
       </div>
     </div>

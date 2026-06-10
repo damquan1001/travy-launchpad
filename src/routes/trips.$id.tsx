@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { ItineraryPanel } from "@/components/ItineraryPanel";
+import { MapPanel } from "@/components/MapPanel";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocale } from "@/hooks/use-locale";
 import { getTrip, saveTrip } from "@/lib/trips.functions";
@@ -69,13 +70,18 @@ function TripDetail() {
   return (
     <div className="flex h-screen flex-col bg-paper">
       <Nav />
-      <div className="flex-1 overflow-hidden">
-        <ItineraryPanel
-          itinerary={itinerary}
-          onChange={handleChange}
-          saving={saving}
-          saved={saved}
-        />
+      <div className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-[1fr_1fr]">
+        <section className="min-h-0 overflow-hidden border-r border-border">
+          <ItineraryPanel
+            itinerary={itinerary}
+            onChange={handleChange}
+            saving={saving}
+            saved={saved}
+          />
+        </section>
+        <section className="hidden min-h-0 overflow-hidden lg:block">
+          <MapPanel itinerary={itinerary} />
+        </section>
       </div>
     </div>
   );

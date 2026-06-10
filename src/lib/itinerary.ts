@@ -14,6 +14,8 @@ export type ItineraryPlace = {
   community_flag?: boolean;
   source_kind?: SourceKind;
   source_url?: string | null;
+  lat?: number | null;
+  lng?: number | null;
 };
 
 export type ItineraryDay = {
