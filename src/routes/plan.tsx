@@ -9,6 +9,7 @@ import { MapPanel } from "@/components/MapPanel";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocale } from "@/hooks/use-locale";
 import { saveTrip, flagInaccuracy } from "@/lib/trips.functions";
+import { extractDestinationQuery, geocodePlace, type GeoFocus } from "@/lib/geocode";
 import type { Itinerary } from "@/lib/itinerary";
 
 export const Route = createFileRoute("/plan")({
@@ -29,6 +30,14 @@ function PlanPage() {
   const [tripId, setTripId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [focus, setFocus] = useState<GeoFocus | null>(null);
+
+  const handleUserMessage = useCallback(async (text: string) => {
+    const q = extractDestinationQuery(text);
+    if (!q) return;
+    const g = await geocodePlace(q);
+    if (g) setFocus(g);
+  }, []);
 
   const save = useServerFn(saveTrip);
   const flag = useServerFn(flagInaccuracy);
@@ -107,25 +116,36 @@ function PlanPage() {
     }
   };
 
+  const hasItinerary = !!itinerary && itinerary.days.length > 0;
+
   return (
     <div className="flex h-screen flex-col bg-paper">
       <Nav />
-      <div className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-[1fr_1fr_1fr]">
+      <div
+        className={`grid min-h-0 flex-1 overflow-hidden ${
+          hasItinerary ? "lg:grid-cols-[1fr_1fr_1fr]" : "lg:grid-cols-2"
+        }`}
+      >
         <section className="flex min-h-0 flex-col overflow-hidden border-r border-border">
-          <ChatPanel onItinerary={(it) => { setItinerary(it); setSaved(false); }} />
-        </section>
-        <section className="hidden min-h-0 overflow-hidden border-r border-border lg:flex lg:flex-col">
-          <ItineraryPanel
-            itinerary={itinerary}
-            onChange={handleChange}
-            onSave={handleSave}
-            saving={saving}
-            saved={saved}
-            onFlag={handleFlag}
+          <ChatPanel
+            onItinerary={(it) => { setItinerary(it); setSaved(false); }}
+            onUserMessage={handleUserMessage}
           />
         </section>
+        {hasItinerary && (
+          <section className="hidden min-h-0 overflow-hidden border-r border-border lg:flex lg:flex-col">
+            <ItineraryPanel
+              itinerary={itinerary}
+              onChange={handleChange}
+              onSave={handleSave}
+              saving={saving}
+              saved={saved}
+              onFlag={handleFlag}
+            />
+          </section>
+        )}
         <section className="hidden min-h-0 overflow-hidden lg:block">
-          <MapPanel itinerary={itinerary} />
+          <MapPanel itinerary={itinerary} focus={focus} />
         </section>
       </div>
     </div>

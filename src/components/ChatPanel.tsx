@@ -14,11 +14,12 @@ import type { Itinerary } from "@/lib/itinerary";
 type Props = {
   initialMessages?: UIMessage[];
   onItinerary?: (it: Itinerary) => void;
+  onUserMessage?: (text: string) => void;
 };
 
 const ONBOARDING_KEYS = ["hoian", "hanoiFood", "sapa", "hue", "hagiang", "family"] as const;
 
-export function ChatPanel({ initialMessages = [], onItinerary }: Props) {
+export function ChatPanel({ initialMessages = [], onItinerary, onUserMessage }: Props) {
   const [locale] = useLocale();
   const tr = t(locale);
   const [input, setInput] = useState("");
@@ -67,6 +68,7 @@ export function ChatPanel({ initialMessages = [], onItinerary }: Props) {
   const send = (text: string) => {
     const v = text.trim();
     if (!v || status === "submitted" || status === "streaming") return;
+    onUserMessage?.(v);
     void sendMessage({ text: v });
     setInput("");
   };

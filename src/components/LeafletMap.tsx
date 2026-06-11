@@ -33,14 +33,14 @@ function makeIcon(color: string, label: string) {
   });
 }
 
-export default function LeafletMap({ itinerary }: { itinerary: Itinerary }) {
+export default function LeafletMap({ itinerary, focus }: { itinerary: Itinerary | null; focus?: { lat: number; lng: number; zoom: number; label: string } | null }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.LayerGroup | null>(null);
 
   const pins = useMemo(() => {
     const out: { lat: number; lng: number; name: string; blurb: string; day: number }[] = [];
-    itinerary.days.forEach((d) => {
+    itinerary?.days.forEach((d) => {
       d.places.forEach((p) => {
         if (p.lat != null && p.lng != null) {
           out.push({ lat: p.lat, lng: p.lng, name: p.name, blurb: p.blurb, day: d.day });
@@ -84,6 +84,13 @@ export default function LeafletMap({ itinerary }: { itinerary: Itinerary }) {
     const bounds = L.latLngBounds(pins.map((p) => [p.lat, p.lng] as [number, number]));
     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
   }, [pins]);
+
+  // Fly to focus when there are no pins yet (early UX: user mentions a region)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !focus || pins.length) return;
+    map.flyTo([focus.lat, focus.lng], focus.zoom, { duration: 0.9 });
+  }, [focus, pins.length]);
 
   return <div ref={containerRef} className="h-full w-full" />;
 }
