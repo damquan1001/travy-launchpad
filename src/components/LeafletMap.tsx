@@ -85,6 +85,13 @@ export default function LeafletMap({ itinerary, focus }: { itinerary: Itinerary 
     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
   }, [pins]);
 
+  // Fly to focus when there are no pins yet (early UX: user mentions a region)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !focus || pins.length) return;
+    map.flyTo([focus.lat, focus.lng], focus.zoom, { duration: 0.9 });
+  }, [focus, pins.length]);
+
   return <div ref={containerRef} className="h-full w-full" />;
 }
 
