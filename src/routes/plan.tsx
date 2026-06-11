@@ -9,6 +9,7 @@ import { MapPanel } from "@/components/MapPanel";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocale } from "@/hooks/use-locale";
 import { saveTrip, flagInaccuracy } from "@/lib/trips.functions";
+import { extractDestinationQuery, geocodePlace, type GeoFocus } from "@/lib/geocode";
 import type { Itinerary } from "@/lib/itinerary";
 
 export const Route = createFileRoute("/plan")({
