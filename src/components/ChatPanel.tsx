@@ -14,6 +14,7 @@ import type { Itinerary } from "@/lib/itinerary";
 type Props = {
   initialMessages?: UIMessage[];
   onItinerary?: (it: Itinerary) => void;
+  onUserMessage?: (text: string) => void;
 };
 
 const ONBOARDING_KEYS = ["hoian", "hanoiFood", "sapa", "hue", "hagiang", "family"] as const;
