@@ -42,19 +42,22 @@ export function ChatPanel({ initialMessages = [], onItinerary, onUserMessage }: 
     },
   });
 
-  // Extract latest itinerary from tool calls
+  // Extract latest itinerary from tool calls — accept streaming input or final output.
   useEffect(() => {
     if (!onItinerary) return;
     for (let i = messages.length - 1; i >= 0; i--) {
       const m = messages[i];
       for (const part of m.parts) {
         const anyPart = part as any;
-        if (anyPart.type === "tool-build_itinerary" && anyPart.state === "output-available") {
-          const it = anyPart.output?.itinerary as Itinerary | undefined;
-          if (it) { onItinerary(it); return; }
+        if (anyPart.type !== "tool-build_itinerary") continue;
+        const fromOutput = anyPart.output?.itinerary as Itinerary | undefined;
+        if (fromOutput && Array.isArray(fromOutput.days) && fromOutput.days.length) {
+          onItinerary(fromOutput);
+          return;
         }
-        if (anyPart.type === "tool-build_itinerary" && anyPart.input?.days) {
-          onItinerary(anyPart.input as Itinerary);
+        const fromInput = anyPart.input as Itinerary | undefined;
+        if (fromInput && Array.isArray(fromInput.days) && fromInput.days.length) {
+          onItinerary(fromInput);
           return;
         }
       }
