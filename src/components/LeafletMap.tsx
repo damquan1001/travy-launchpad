@@ -89,7 +89,7 @@ export default function LeafletMap({ itinerary, focus }: { itinerary: Itinerary 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !focus || pins.length) return;
-    map.flyTo([focus.lat, focus.lng], focus.zoom, { duration: 0.9 });
+    map.flyTo([focus.lat, focus.lng], focus.zoom, { duration: 1.4, easeLinearity: 0.25 });
   }, [focus, pins.length]);
 
   return <div ref={containerRef} className="h-full w-full" />;
