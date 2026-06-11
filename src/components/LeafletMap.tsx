@@ -82,14 +82,14 @@ export default function LeafletMap({ itinerary, focus }: { itinerary: Itinerary 
       m.addTo(layer);
     });
     const bounds = L.latLngBounds(pins.map((p) => [p.lat, p.lng] as [number, number]));
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+    map.flyToBounds(bounds, { padding: [40, 40], maxZoom: 14, duration: 1.2 });
   }, [pins]);
 
   // Fly to focus when there are no pins yet (early UX: user mentions a region)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !focus || pins.length) return;
-    map.flyTo([focus.lat, focus.lng], focus.zoom, { duration: 0.9 });
+    map.flyTo([focus.lat, focus.lng], focus.zoom, { duration: 1.4, easeLinearity: 0.25 });
   }, [focus, pins.length]);
 
   return <div ref={containerRef} className="h-full w-full" />;
