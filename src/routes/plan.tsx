@@ -30,6 +30,14 @@ function PlanPage() {
   const [tripId, setTripId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [focus, setFocus] = useState<GeoFocus | null>(null);
+
+  const handleUserMessage = useCallback(async (text: string) => {
+    const q = extractDestinationQuery(text);
+    if (!q) return;
+    const g = await geocodePlace(q);
+    if (g) setFocus(g);
+  }, []);
 
   const save = useServerFn(saveTrip);
   const flag = useServerFn(flagInaccuracy);
