@@ -33,7 +33,7 @@ function makeIcon(color: string, label: string) {
   });
 }
 
-export default function LeafletMap({ itinerary }: { itinerary: Itinerary }) {
+export default function LeafletMap({ itinerary, focus }: { itinerary: Itinerary | null; focus?: { lat: number; lng: number; zoom: number; label: string } | null }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.LayerGroup | null>(null);
