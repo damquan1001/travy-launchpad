@@ -68,6 +68,7 @@ export function ChatPanel({ initialMessages = [], onItinerary, onUserMessage }: 
   const send = (text: string) => {
     const v = text.trim();
     if (!v || status === "submitted" || status === "streaming") return;
+    onUserMessage?.(v);
     void sendMessage({ text: v });
     setInput("");
   };
