@@ -40,7 +40,7 @@ export default function LeafletMap({ itinerary, focus }: { itinerary: Itinerary 
 
   const pins = useMemo(() => {
     const out: { lat: number; lng: number; name: string; blurb: string; day: number }[] = [];
-    itinerary.days.forEach((d) => {
+    itinerary?.days.forEach((d) => {
       d.places.forEach((p) => {
         if (p.lat != null && p.lng != null) {
           out.push({ lat: p.lat, lng: p.lng, name: p.name, blurb: p.blurb, day: d.day });
