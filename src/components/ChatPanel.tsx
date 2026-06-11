@@ -19,7 +19,7 @@ type Props = {
 
 const ONBOARDING_KEYS = ["hoian", "hanoiFood", "sapa", "hue", "hagiang", "family"] as const;
 
-export function ChatPanel({ initialMessages = [], onItinerary }: Props) {
+export function ChatPanel({ initialMessages = [], onItinerary, onUserMessage }: Props) {
   const [locale] = useLocale();
   const tr = t(locale);
   const [input, setInput] = useState("");
